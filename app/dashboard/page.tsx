@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import Link from "next/link"
 import { Bell, Search, Settings, Users, Video, Sparkles, X } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -11,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { VideoCard } from "@/components/dashboard/video-card"
 import { LiveSessionCard } from "@/components/dashboard/live-session-card"
 import { CommunityCard } from "@/components/dashboard/community-card"
@@ -19,10 +20,13 @@ import { StatsCard } from "@/components/dashboard/stats-card"
 import { StickerPack } from "@/components/dashboard/sticker-pack"
 import { NotificationsPanel } from "@/components/dashboard/notifications-panel"
 import { VideoChat } from "@/components/dashboard/video-chat"
+import { SettingsPanel } from "@/components/dashboard/settings-panel"
 import { AnimatedBackgroundContainer } from "@/components/ui/animated-background"
 import { GlowCard } from "@/components/ui/glow-card"
 import { AnimatedButton } from "@/components/ui/animated-button"
 import { FloatingNav } from "@/components/ui/floating-nav"
+import { UserProfileMenu } from "@/components/auth/user-profile-menu"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("feed")
@@ -61,7 +65,6 @@ export default function DashboardPage() {
         exit="exit"
         className="min-h-screen text-white"
       >
-        {/* Header */}
         <header
           className={`sticky top-0 z-50 border-b border-white/10 transition-all duration-300 ${
             isScrolled ? "bg-black/90 backdrop-blur-md" : "bg-black/50 backdrop-blur-sm"
@@ -69,9 +72,7 @@ export default function DashboardPage() {
         >
           <div className="container mx-auto px-4 h-16 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Avatar>
-                <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500">IX</AvatarFallback>
-              </Avatar>
+              <UserProfileMenu />
               <h1 className="text-xl font-bold hidden md:block">Inside X</h1>
             </div>
 
@@ -98,6 +99,13 @@ export default function DashboardPage() {
                 Start Video Chat
               </AnimatedButton>
 
+              <Link href="/creator-studio">
+                <Button variant="outline" size="sm" className="hidden md:flex items-center gap-2 border-pink-500/50 text-pink-400 hover:bg-pink-500/10">
+                  <Sparkles className="h-4 w-4" />
+                  Creator Studio
+                </Button>
+              </Link>
+
               <Sheet open={notificationsOpen} onOpenChange={setNotificationsOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="relative">
@@ -107,6 +115,9 @@ export default function DashboardPage() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="bg-gray-900 border-white/10">
+                  <SheetHeader>
+                    <SheetTitle>Notifications</SheetTitle>
+                  </SheetHeader>
                   <NotificationsPanel />
                 </SheetContent>
               </Sheet>
@@ -119,8 +130,10 @@ export default function DashboardPage() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="bg-gray-900 border-white/10">
-                  <h2 className="text-xl font-bold mb-4">Settings</h2>
-                  {/* Settings content would go here */}
+                  <SheetHeader>
+                    <SheetTitle>Settings</SheetTitle>
+                  </SheetHeader>
+                  <SettingsPanel />
                 </SheetContent>
               </Sheet>
             </div>
@@ -192,7 +205,7 @@ export default function DashboardPage() {
                                 title={`Live Session ${i + 1}`}
                                 host={`User${i + 100}`}
                                 time={`${i + 1}:00 PM`}
-                                participants={Math.floor(Math.random() * 100) + 10}
+                                participants={10 + i * 5} // Use deterministic values instead of random
                               />
                             ))}
                           </div>
@@ -247,10 +260,10 @@ export default function DashboardPage() {
                             title={`Live Stream ${i + 1}`}
                             username={`User${i + 200}`}
                             tags={["Live", i % 2 === 0 ? "Music" : "Art"]}
-                            likes={Math.floor(Math.random() * 500)}
-                            comments={Math.floor(Math.random() * 100)}
+                            likes={100 + i * 50}
+                            comments={20 + i * 5}
                             isLive={true}
-                            viewers={Math.floor(Math.random() * 100) + 10}
+                            viewers={15 + i * 10}
                           />
                         ))}
                       </div>
@@ -287,10 +300,10 @@ export default function DashboardPage() {
                             title={`Discover Video ${i + 1}`}
                             username={`User${i + 300}`}
                             tags={[i % 3 === 0 ? "Photography" : i % 3 === 1 ? "Music" : "Art"]}
-                            likes={Math.floor(Math.random() * 500)}
-                            comments={Math.floor(Math.random() * 100)}
+                            likes={200 + i * 60}
+                            comments={30 + i * 8}
                             isLive={i % 4 === 0}
-                            viewers={i % 4 === 0 ? Math.floor(Math.random() * 100) + 10 : undefined}
+                            viewers={i % 4 === 0 ? 25 + i * 12 : undefined}
                           />
                         ))}
                       </div>

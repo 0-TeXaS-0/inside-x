@@ -1,7 +1,8 @@
-"use client"
+'use client'
 
 import { motion } from "framer-motion"
 import { Pacifico } from "next/font/google"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { AnimatedText } from "@/components/ui/animated-text"
 import { AnimatedButton } from "@/components/ui/animated-button"
@@ -202,8 +203,9 @@ export default function HeroSection({
               size="lg"
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0"
               glowColor="rgba(147, 51, 234, 0.5)"
+              asChild
             >
-              Get Started
+              <Link href="/auth">Get Started</Link>
             </AnimatedButton>
             <AnimatedButton
               size="lg"

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Home, Video, Users, MessageCircle, Search, Plus, X } from "lucide-react"
+import { Home, Video, Users, MessageCircle, User, Plus, X, Upload, Settings, BarChart, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -17,10 +17,11 @@ export function FloatingNav({ activeItem }: FloatingNavProps) {
 
   const navItems = [
     { name: "home", icon: Home, label: "Home", href: "/dashboard" },
-    { name: "video", icon: Video, label: "Video Chat", href: "#" },
-    { name: "communities", icon: Users, label: "Communities", href: "/communities" },
-    { name: "messages", icon: MessageCircle, label: "Messages", href: "#" },
-    { name: "search", icon: Search, label: "Search", href: "#" },
+    { name: "discover", icon: Sparkles, label: "Discover", href: "/discover" },
+    { name: "upload", icon: Upload, label: "Upload", href: "/upload" },
+    { name: "messages", icon: MessageCircle, label: "Messages", href: "/messages" },
+    { name: "analytics", icon: BarChart, label: "Analytics", href: "/analytics" },
+    { name: "profile", icon: User, label: "Profile", href: "/profile" },
   ]
 
   useEffect(() => {

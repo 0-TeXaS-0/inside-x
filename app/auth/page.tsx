@@ -17,6 +17,7 @@ import { GlowCard } from "@/components/ui/glow-card"
 import { AnimatedText } from "@/components/ui/animated-text"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useAuthentication } from "@/hooks/use-authentication"
 
 export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -30,91 +31,36 @@ export default function AuthPage() {
     rememberMe: false,
     agreeToTerms: false
   })
-  const [errors, setErrors] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    terms: ""
-  })
-  const [isLoading, setIsLoading] = useState(false)
-
-  // Simulate loading state for demo purposes
+  
+  const { isLoading, errors, handleLogin, handleSignup } = useAuthentication()
+  
+  // Check for redirection from protected pages
+  useEffect(() => {
+    const redirectPath = sessionStorage.getItem("redirectAfterAuth")
+    if (redirectPath) {
+      // We'll use this later when redirecting after login
+      console.log("Will redirect to:", redirectPath)
+    }
+  }, [])
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Simple validation
-    const newErrors = { ...errors }
-    let hasError = false
-    
     if (activeTab === "signup") {
-      if (!formState.username) {
-        newErrors.username = "Username is required"
-        hasError = true
-      } else {
-        newErrors.username = ""
-      }
-      
-      if (!formState.email) {
-        newErrors.email = "Email is required"
-        hasError = true
-      } else if (!/\S+@\S+\.\S+/.test(formState.email)) {
-        newErrors.email = "Email is invalid"
-        hasError = true
-      } else {
-        newErrors.email = ""
-      }
-      
-      if (!formState.password) {
-        newErrors.password = "Password is required"
-        hasError = true
-      } else if (formState.password.length < 8) {
-        newErrors.password = "Password must be at least 8 characters"
-        hasError = true
-      } else {
-        newErrors.password = ""
-      }
-      
-      if (formState.password !== formState.confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match"
-        hasError = true
-      } else {
-        newErrors.confirmPassword = ""
-      }
-      
-      if (!formState.agreeToTerms) {
-        newErrors.terms = "You must agree to the terms"
-        hasError = true
-      } else {
-        newErrors.terms = ""
-      }
+      handleSignup({
+        username: formState.username,
+        email: formState.email,
+        password: formState.password,
+        confirmPassword: formState.confirmPassword,
+        displayName: formState.displayName,
+        agreeToTerms: formState.agreeToTerms
+      })
     } else {
-      // Login validation
-      if (!formState.username && !formState.email) {
-        newErrors.username = "Username or email is required"
-        hasError = true
-      } else {
-        newErrors.username = ""
-      }
-      
-      if (!formState.password) {
-        newErrors.password = "Password is required"
-        hasError = true
-      } else {
-        newErrors.password = ""
-      }
-    }
-    
-    setErrors(newErrors)
-    
-    if (!hasError) {
-      setIsLoading(true)
-      // Simulate API call
-      setTimeout(() => {
-        setIsLoading(false)
-        // Redirect to dashboard on successful login/signup
-        window.location.href = "/dashboard"
-      }, 1500)
+      handleLogin({
+        usernameOrEmail: formState.username,
+        password: formState.password,
+        rememberMe: formState.rememberMe
+      })
     }
   }
   

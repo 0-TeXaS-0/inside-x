@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -12,6 +13,15 @@ interface LiveSessionCardProps {
 }
 
 export function LiveSessionCard({ title, host, time, participants }: LiveSessionCardProps) {
+  // Fix for hydration mismatch - only render participants count on client
+  const [isClient, setIsClient] = useState(false)
+  const [displayParticipants, setDisplayParticipants] = useState("--")
+
+  useEffect(() => {
+    setIsClient(true)
+    setDisplayParticipants(participants.toString())
+  }, [participants])
+
   return (
     <div className="w-48 flex-shrink-0">
       <div className="aspect-square bg-gray-900/50 rounded-lg overflow-hidden relative mb-2">
@@ -35,7 +45,7 @@ export function LiveSessionCard({ title, host, time, participants }: LiveSession
       <h3 className="font-medium text-sm truncate">{title}</h3>
       <div className="flex items-center justify-between mt-1">
         <p className="text-xs text-white/60">{time}</p>
-        <p className="text-xs text-white/60">{participants} joined</p>
+        <p className="text-xs text-white/60">{isClient ? `${displayParticipants} joined` : "-- joined"}</p>
       </div>
       <Button variant="ghost" size="sm" className="w-full mt-2 text-purple-400 hover:text-purple-300 hover:bg-white/5">
         Join Session

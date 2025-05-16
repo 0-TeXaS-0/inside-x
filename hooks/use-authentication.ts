@@ -99,14 +99,26 @@ export function useAuthentication() {
         } else {
           localStorage.removeItem("insidex_remember")
         }
-        
-        // Show success toast and redirect
+          // Show success toast
         toast({
           title: "Login successful",
           description: "Welcome back to Inside X!",
         })
+          // Check if there was a saved redirect
+        const redirectPath = sessionStorage.getItem("redirectAfterAuth")
         
-        router.push("/dashboard")
+        // Determine where to redirect the user
+        if (redirectPath && auth.user?.hasCompletedOnboarding) {
+          // If user completed onboarding and has a redirect, go there
+          sessionStorage.removeItem("redirectAfterAuth")
+          router.push(redirectPath)
+        } else if (auth.user && !auth.user.hasCompletedOnboarding) {
+          // New user needs to complete onboarding
+          router.push("/onboarding")
+        } else {
+          // Default to dashboard for existing users
+          router.push("/dashboard")
+        }
       } catch (error) {
         console.error("Login error:", error)
         setErrors({

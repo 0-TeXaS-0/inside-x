@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { Progress } from "@/components/ui/progress"
+import { useAuth } from "@/contexts/auth-context"
 import InterestsStep from "@/components/onboarding/interests-step"
 import AvatarStep from "@/components/onboarding/avatar-step"
 import PrivacyStep from "@/components/onboarding/privacy-step"
@@ -15,6 +16,7 @@ import { AnimatedText } from "@/components/ui/animated-text"
 
 export default function OnboardingPage() {
   const router = useRouter()
+  const { user, isLoading, updateOnboardingStatus } = useAuth()
   const [step, setStep] = useState(0)
   const [formData, setFormData] = useState({
     interests: [],
@@ -35,10 +37,22 @@ export default function OnboardingPage() {
   const totalSteps = 5
   const progress = ((step + 1) / totalSteps) * 100
 
+  // Redirect to auth page if not authenticated
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/auth")
+    } else if (!isLoading && user?.hasCompletedOnboarding) {
+      // If user has already completed onboarding, redirect to dashboard
+      router.push("/dashboard")
+    }
+  }, [user, isLoading, router])
+
   const handleNext = () => {
     if (step < totalSteps - 1) {
       setStep(step + 1)
     } else {
+      // Mark onboarding as completed before redirecting to dashboard
+      updateOnboardingStatus(true)
       router.push("/dashboard")
     }
   }
@@ -49,7 +63,7 @@ export default function OnboardingPage() {
     }
   }
 
-  const updateFormData = (field, value) => {
+  const updateFormData = (field: keyof typeof formData, value: any) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -65,7 +79,7 @@ export default function OnboardingPage() {
       component: (
         <InterestsStep
           selectedInterests={formData.interests}
-          updateInterests={(interests) => updateFormData("interests", interests)}
+          updateInterests={(interests: string[]) => updateFormData("interests", interests)}
         />
       ),
       title: "Select Your Interests",
@@ -75,8 +89,8 @@ export default function OnboardingPage() {
         <AvatarStep
           avatar={formData.avatar}
           username={formData.username}
-          updateAvatar={(avatar) => updateFormData("avatar", avatar)}
-          updateUsername={(username) => updateFormData("username", username)}
+          updateAvatar={(avatar: File | null) => updateFormData("avatar", avatar)}
+          updateUsername={(username: string) => updateFormData("username", username)}
         />
       ),
       title: "Create Your Profile",
@@ -85,7 +99,7 @@ export default function OnboardingPage() {
       component: (
         <PrivacyStep
           privacySettings={formData.privacySettings}
-          updatePrivacySettings={(settings) => updateFormData("privacySettings", settings)}
+          updatePrivacySettings={(settings: typeof formData.privacySettings) => updateFormData("privacySettings", settings)}
         />
       ),
       title: "Privacy Settings",
@@ -94,7 +108,7 @@ export default function OnboardingPage() {
       component: (
         <ContentPreferencesStep
           contentPreferences={formData.contentPreferences}
-          updateContentPreferences={(prefs) => updateFormData("contentPreferences", prefs)}
+          updateContentPreferences={(prefs: typeof formData.contentPreferences) => updateFormData("contentPreferences", prefs)}
         />
       ),
       title: "Content Preferences",
@@ -102,7 +116,7 @@ export default function OnboardingPage() {
   ]
 
   const variants = {
-    enter: (direction) => ({
+    enter: (direction: number) => ({
       x: direction > 0 ? 1000 : -1000,
       opacity: 0,
     }),
@@ -110,7 +124,7 @@ export default function OnboardingPage() {
       x: 0,
       opacity: 1,
     },
-    exit: (direction) => ({
+    exit: (direction: number) => ({
       x: direction < 0 ? 1000 : -1000,
       opacity: 0,
     }),
